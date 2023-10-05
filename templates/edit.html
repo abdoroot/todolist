@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo list</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+</head>
+
+<body>
+    <div class="card" style="border: 0px;">
+        <div class="card-header">Create</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form action="{{.siteBase}}task/{{.task.Id}}/edit" method="post">
+                        {{if .editTaskSucess}}
+                        <div class="alert alert-success" role="alert">
+                            {{.editTaskSucess}}
+                        </div>
+                        {{end}}
+                        {{if .editTaskSucess}}
+                        <div class="alert alert-danger" role="alert">
+                            {{.editTaskSucess}}
+                        </div>
+                        {{end}}
+                        <div class="form-group row">
+                            <label for="email_address" class="col-md-3 col-form-label ">Name</label>
+                            <div class="col-md-6">
+                                <input type="text" id="name" value="{{.task.Name}}" class="form-control" name="name"
+                                    required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="due_date" class="col-md-3 col-form-label ">Due Date
+                            </label>
+                            <div class="col-md-6">
+                                <input type="date" id="due_date" value="{{.task.DueDate}}" class="form-control"
+                                    name="due_date" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="priority" class="col-md-3 col-form-label ">Priority
+                            </label>
+                            <div class="col-md-6">
+                                <select type="text" id="priority" class="form-control" name="priority" required>
+                                    {{range .priorities}}
+                                    <option {{if eq .Name $.task.Priority }} selected {{end}} value="{{.Name}}">
+                                        {{.Name}}
+                                    </option>
+                                    {{end}}
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label for="description" class="col-md-3 col-form-label ">description
+                            </label>
+                            <div class="col-md-6">
+                                <textarea id="description" class="form-control" name="description"
+                                    required>{{.task.Description}}</textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6 offset-md-3">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Save
+                            </button>
+                            <a href="{{.siteBase}}" type="button" class="btn  btn-sm btn-primary">Back To Home</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

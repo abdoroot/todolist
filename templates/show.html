@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo list</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+</head>
+
+<body>
+    <div class="card" style="border: 0px;">
+        <div class="card-header">{{.task.Name}}</div>
+        <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <span class="badge badge-primary">{{.task.Priority}}</span>
+                    <h6 class="card-subtitle mb-2 mt-2 text-muted">{{.task.DueDate}}</h6>
+                    <p class="card-text">{{.task.Description}}</p>
+                    <a type="button" href="{{.siteBase}}task/{{.task.Id}}/edit" class="mb-2 btn btn-primary btn-sm">edit
+                        task</a>
+                    <a type="button" href="{{.siteBase}}" class="mb-2 btn btn-primary btn-sm">Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo list</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+</head>
+
+<body>
+    <div class="card" style="border: 0px;">
+        <div class="card-header">Todo List Home</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form action="{{.siteBase}}logout" method="POST">
+                        <a href="{{.siteBase}}task/create" type="button" class="mb-2 btn btn-primary btn-sm">Create
+                            Task</a>
+                        <button type="submit" class="mb-2 btn btn-warning btn-sm">Logout</button>
+                    </form>
+                    <div class="list-group">
+                        {{range .tasks}}
+                        <a type="button" href="{{$.siteBase}}task/{{.Id}}"
+                            class="list-group-item list-group-item-action">
+                            {{.Name}} - {{.DueDate}} <span
+                                class="float-right badge badge-primary badge-pill">{{.Priority}}</span>
+                        </a>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
