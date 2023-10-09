@@ -143,7 +143,7 @@ func DoEditTask(c *gin.Context) {
 	dueDate := c.PostForm("due_date")
 	priority := c.PostForm("priority")
 	description := c.PostForm("description")
-	updatedAt := time.Now().String()
+	updatedAt := time.Now().Format("2006-01-02 15:04:05")
 	updateTaskError := ""
 	updateTaskSucess := ""
 	if name != "" && dueDate != "" && description != "" {
@@ -170,14 +170,14 @@ func DoCreateTask(c *gin.Context) {
 	dueDate := c.PostForm("due_date")
 	priority := c.PostForm("priority")
 	description := c.PostForm("description")
-	createdAt := time.Now().String()
+	createdAt := time.Now().Format("2006-01-02 15:04:05")
 	userId := AuthUserId(c)
-	CreateTaskError := ""
-	CreateTaskSucess := ""
+	var CreateTaskError, CreateTaskSucess string
 	if name != "" && dueDate != "" && description != "" {
 		//save task
-		_, err := db.Query("insert into tasks(user_id,name,due_date,priority,description,created_at) values($1,$2,$3,$4,$5,$6)", userId, name, dueDate, priority, description, createdAt)
+		_, err := db.Exec("insert into tasks(user_id,name,due_date,priority,description,created_at) values($1,$2,$3,$4,$5,$6)", userId, name, dueDate, priority, description, createdAt)
 		if err != nil {
+			CreateTaskError = "db error :" + err.Error()
 			fmt.Println(err.Error())
 			c.Redirect(http.StatusMovedPermanently, SiteBase)
 		}
@@ -236,10 +236,10 @@ func DOSignUp(c *gin.Context) {
 	name := c.PostForm("name")
 	email := c.PostForm("email")
 	password := c.PostForm("password")
-	createdAt := time.Now().String()
+	createdAt := time.Now().Format("2006-01-02 15:04:05")
 
 	if name != "" && strings.Contains(email, "@") && password != "" {
-		_, err := db.Query("insert into users (name,email,password,created_at) values($1,$2,$3,$3)", name, email, password, createdAt)
+		_, err := db.Exec("insert into users (name,email,password,created_at) values($1,$2,$3,$3)", name, email, password, createdAt)
 		if err != nil {
 			fmt.Println(err.Error())
 			c.HTML(http.StatusOK, "sign_up.html", gin.H{
