@@ -39,7 +39,7 @@ func AuthUserId(c *gin.Context) int {
 	var userId int
 	session := sessions.Default(c)
 	userEmail := session.Get("loginuseremail")
-	err := db.QueryRow("select id from users where email=?", userEmail).Scan(&userId)
+	err := db.QueryRow("select id from users where email=$1", userEmail).Scan(&userId)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -51,7 +51,7 @@ func Home(c *gin.Context) {
 	tasks := []types.Tasks{}
 	userId := AuthUserId(c)
 	fmt.Println(userId)
-	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=?", userId)
+	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=$1", userId)
 	if err != nil {
 		panic("dbs errors:" + err.Error())
 	}
@@ -77,7 +77,7 @@ func ShowTask(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, SiteBase)
 	}
 	task := types.Tasks{}
-	dberr := db.QueryRow("select id,name,due_date,priority,description from tasks where id = ?", taskIdInt).Scan(&task.Id, &task.Name, &task.DueDate, &task.Priority, &task.Description)
+	dberr := db.QueryRow("select id,name,due_date,priority,description from tasks where id = $1", taskIdInt).Scan(&task.Id, &task.Name, &task.DueDate, &task.Priority, &task.Description)
 	if dberr != nil {
 		fmt.Println(dberr.Error())
 		c.Redirect(http.StatusTemporaryRedirect, SiteBase)
@@ -117,7 +117,7 @@ func EditTask(c *gin.Context) {
 		c.Redirect(http.StatusTemporaryRedirect, SiteBase)
 	}
 	task := types.Tasks{}
-	dberr := db.QueryRow("select id,name,due_date,priority,description from tasks where id = ?", taskIdInt).Scan(&task.Id, &task.Name, &task.DueDate, &task.Priority, &task.Description)
+	dberr := db.QueryRow("select id,name,due_date,priority,description from tasks where id = $1", taskIdInt).Scan(&task.Id, &task.Name, &task.DueDate, &task.Priority, &task.Description)
 	result, err := db.Query("select * from priorities")
 	if dberr != nil && err != nil {
 		fmt.Println(dberr.Error() + "-" + err.Error())
@@ -143,12 +143,12 @@ func DoEditTask(c *gin.Context) {
 	dueDate := c.PostForm("due_date")
 	priority := c.PostForm("priority")
 	description := c.PostForm("description")
-	updatedAt := time.Now().String()
+	updatedAt := time.Now().Format("2006-01-02 15:04:05")
 	updateTaskError := ""
 	updateTaskSucess := ""
 	if name != "" && dueDate != "" && description != "" {
 		//update task
-		_, err := db.Query("update tasks set name= ? , due_date=?,priority =?,description=?,updated_at =? where id =?", name, dueDate, priority, description, updatedAt, taskId)
+		_, err := db.Query("update tasks set name= $1 , due_date=$2,priority =$3,description=$4,updated_at =$5 where id =$6", name, dueDate, priority, description, updatedAt, taskId)
 
 		if err != nil {
 			fmt.Println(err.Error())
@@ -170,14 +170,14 @@ func DoCreateTask(c *gin.Context) {
 	dueDate := c.PostForm("due_date")
 	priority := c.PostForm("priority")
 	description := c.PostForm("description")
-	createdAt := time.Now().String()
+	createdAt := time.Now().Format("2006-01-02 15:04:05")
 	userId := AuthUserId(c)
-	CreateTaskError := ""
-	CreateTaskSucess := ""
+	var CreateTaskError, CreateTaskSucess string
 	if name != "" && dueDate != "" && description != "" {
 		//save task
-		_, err := db.Query("insert into tasks(user_id,name,due_date,priority,description,created_at) values(?,?,?,?,?,?)", userId, name, dueDate, priority, description, createdAt)
+		_, err := db.Exec("insert into tasks(user_id,name,due_date,priority,description,created_at) values($1,$2,$3,$4,$5,$6)", userId, name, dueDate, priority, description, createdAt)
 		if err != nil {
+			CreateTaskError = "db error :" + err.Error()
 			fmt.Println(err.Error())
 			c.Redirect(http.StatusMovedPermanently, SiteBase)
 		}
@@ -208,7 +208,7 @@ func DoLogin(c *gin.Context) {
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 	returnTo := c.PostForm("return_to")
-	err := db.QueryRow("SELECT email,password FROM users where email = ? and password = ? ", email, password).Scan(&login.Email, &login.Password)
+	err := db.QueryRow("SELECT email,password from users where email = $1 and password = $2 ", email, password).Scan(&login.Email, &login.Password)
 	if err != nil {
 		fmt.Println(err.Error())
 		loginErr := "Error email or password"
@@ -236,10 +236,10 @@ func DOSignUp(c *gin.Context) {
 	name := c.PostForm("name")
 	email := c.PostForm("email")
 	password := c.PostForm("password")
-	createdAt := time.Now().String()
+	createdAt := time.Now().Format("2006-01-02 15:04:05")
 
 	if name != "" && strings.Contains(email, "@") && password != "" {
-		_, err := db.Query("insert into users (name,email,password,created_at) values(?,?,?,?)", name, email, password, createdAt)
+		_, err := db.Exec("insert into users (name,email,password,created_at) values($1,$2,$3,$3)", name, email, password, createdAt)
 		if err != nil {
 			fmt.Println(err.Error())
 			c.HTML(http.StatusOK, "sign_up.html", gin.H{
