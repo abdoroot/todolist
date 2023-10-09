@@ -51,7 +51,7 @@ func Home(c *gin.Context) {
 	tasks := []types.Tasks{}
 	userId := AuthUserId(c)
 	fmt.Println(userId)
-	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=$1", userId)
+	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=$1 order by due_date asc", userId)
 	if err != nil {
 		panic("dbs errors:" + err.Error())
 	}
