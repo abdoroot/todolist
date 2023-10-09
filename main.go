@@ -23,7 +23,8 @@ func init() {
 	SessionStore := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("mysession", SessionStore))
 	//db connect
-	dbConnection, err := DbConnect()
+	//dbConnection, err := MySqlDbConnect()
+	dbConnection, err := PgDbConnect() //postgres DB
 	db = dbConnection
 	fmt.Println(err)
 	if err != nil {
