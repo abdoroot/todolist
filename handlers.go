@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/abdoroot/go_httt/types"
+	"github.com/abdoroot/todolist/types"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

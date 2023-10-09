@@ -1,4 +1,4 @@
-module github.com/abdoroot/go_httt
+module github.com/abdoroot/todolist
 
 go 1.21.1
 
