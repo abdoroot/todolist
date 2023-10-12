@@ -24,8 +24,7 @@ func PgDbConnect() (*sql.DB, error) {
 		return db, err
 	}
 
-	err = db.Ping()
-	if err != nil {
+	if err = db.Ping(); err != nil {
 		return db, err
 	}
 
