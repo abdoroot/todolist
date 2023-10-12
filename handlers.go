@@ -148,7 +148,7 @@ func DoEditTask(c *gin.Context) {
 	updateTaskSucess := ""
 	if name != "" && dueDate != "" && description != "" {
 		//update task
-		_, err := db.Query("update tasks set name= $1 , due_date=$2,priority =$3,description=$4,updated_at =$5 where id =$6", name, dueDate, priority, description, updatedAt, taskId)
+		_, err := db.Exec("update tasks set name= $1 , due_date=$2,priority =$3,description=$4,updated_at =$5 where id =$6", name, dueDate, priority, description, updatedAt, taskId)
 
 		if err != nil {
 			fmt.Println(err.Error())
