@@ -13,10 +13,9 @@ var r *gin.Engine
 
 var db *sql.DB
 
-var SiteBase string
+
 
 func init() {
-	SiteBase = "http://localhost:8080/"
 	r = gin.Default()
 	r.LoadHTMLGlob("templates/*")
 	///sessions
