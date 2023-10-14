@@ -14,6 +14,7 @@ import (
 
 var JWTclaims map[string]interface{}
 
+//api middleware
 func IsAuthApiUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// المفتاح السري الذي تم استخدامه لتوقيع JWT
