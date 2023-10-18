@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,11 +11,12 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var JWTclaims map[string]interface{}
 
-//api middleware
+// api middleware
 func IsAuthApiUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// المفتاح السري الذي تم استخدامه لتوقيع JWT
@@ -256,9 +258,16 @@ func ValidateStruct(inputs interface{}) error {
 }
 
 func getUserFromDbBind(email, password string, user *types.ApiLoginResponse) error {
-	err := db.QueryRow("select id,email,password from users where email = $1 and password = $2", email, password).Scan(&user.Id, &user.Email, &user.Password)
+	var hash string
+	err := db.QueryRow("select id,email,password from users where email = $1", email).Scan(&user.Id, &user.Email, &hash)
 	if err != nil {
 		return err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		log.Println(err.Error())
+		loginErr := "Error email or password"
+		return fmt.Errorf(loginErr)
 	}
 	return nil
 }
