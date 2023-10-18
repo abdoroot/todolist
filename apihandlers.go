@@ -108,17 +108,24 @@ func UpdateApiTask(c *gin.Context) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		HandlerAPiEroor(c, err.Error())
+		return
 	}
 	//Bind inputs
 	inputs := types.ApiUpdateTaskRequest{}
 	if err := c.BindJSON(&inputs); err != nil {
 		HandlerAPiEroor(c, err.Error())
+		return
 	}
 
 	ui := JWTclaims["user_id"]
-	_, updateErr := db.Exec("update tasks set name = $1 , due_date = $2,priority = $3,description = $4 where id=$5 and user_id = $6", inputs.Name, inputs.DueDate, inputs.Priority, inputs.Description, idInt, ui)
+	sqlResult, updateErr := db.Exec("update tasks set name = $1 , due_date = $2,priority = $3,description = $4 , done= $7 where id=$5 and user_id = $6", inputs.Name, inputs.DueDate, inputs.Priority, inputs.Description, idInt, ui, inputs.Done)
 	if updateErr != nil {
 		HandlerAPiEroor(c, updateErr.Error())
+		return
+	}
+
+	if rowCount, err := sqlResult.RowsAffected(); err != nil || rowCount == 0 {
+		HandlerAPiEroor(c, fmt.Sprintf("%v row updated", rowCount))
 	}
 
 	//return the response

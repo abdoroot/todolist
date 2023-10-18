@@ -15,6 +15,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <form action="{{.siteBase}}logout" method="POST">
+                        <a href="{{.siteBase}}?done=true" type="button" class="mb-2 btn btn-primary btn-sm">Show Done
+                            Tasks</a>
                         <a href="{{.siteBase}}task/create" type="button" class="mb-2 btn btn-primary btn-sm">Create
                             Task</a>
                         <button type="submit" class="mb-2 btn btn-warning btn-sm">Logout</button>

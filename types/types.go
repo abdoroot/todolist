@@ -24,6 +24,7 @@ type ApiUpdateTaskRequest struct {
 	DueDate     string `json:"due_date" validate:"required"`
 	Priority    string `json:"priority" validate:"required"`
 	Description string `json:"description" validate:"required"`
+	Done        int    `json:"done" validate:"required,number"`
 }
 
 type ApiResponse struct {

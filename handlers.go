@@ -52,6 +52,7 @@ func AuthUserId(c *gin.Context) (int, error) {
 
 // get
 func Home(c *gin.Context) {
+	doneTasks, ok := c.GetQuery("done")
 	tasks := []types.Tasks{}
 	userId, err := AuthUserId(c)
 	if err != nil {
@@ -59,7 +60,11 @@ func Home(c *gin.Context) {
 		return
 	}
 	log.Println(userId)
-	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=$1 and done=0 order by due_date asc", userId)
+	sqlStr := "select id,name,due_date,priority,description from tasks where user_id=$1 and done=0 order by due_date asc"
+	if ok && doneTasks == "true" {
+		sqlStr = "select id,name,due_date,priority,description from tasks where user_id=$1 and done=1 order by due_date asc"
+	}
+	result, err := db.Query(sqlStr, userId)
 	if err != nil {
 		panic("dbs errors:" + err.Error())
 	}
