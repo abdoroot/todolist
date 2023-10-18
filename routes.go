@@ -20,6 +20,7 @@ func SetupRoutes(r *gin.Engine) {
 		tg.POST("/create", DoCreateTask)
 		tg.GET("/:id/edit", EditTask)
 		tg.POST("/:id/edit", DoEditTask)
+		tg.POST("/taskdone", TaskDone)
 	}
 
 	//api routes

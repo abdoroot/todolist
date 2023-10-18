@@ -19,7 +19,7 @@ func IsAuthUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		returnToUrl := c.Request.Host + c.Request.URL.Path
 		session := sessions.Default(c)
-		ss := session.Get("loginuseremail")
+		ss := session.Get("loginuserid")
 		if ss != nil {
 			c.Next()
 		} else {
@@ -37,23 +37,29 @@ func Logout(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, SiteBase+"login")
 }
 
-func AuthUserId(c *gin.Context) int {
-	var userId int
+func AuthUserId(c *gin.Context) (int, error) {
 	session := sessions.Default(c)
-	userEmail := session.Get("loginuseremail")
-	err := db.QueryRow("select id from users where email=$1", userEmail).Scan(&userId)
+	userId := session.Get("loginuserid").(string)
+	userIdInt, err := strconv.Atoi(userId)
 	if err != nil {
-		fmt.Println(err.Error())
+		return 0, err
 	}
-	return userId
+	if userIdInt == 0 {
+		return 0, fmt.Errorf("User Session Not Avilable")
+	}
+	return userIdInt, nil
 }
 
 // get
 func Home(c *gin.Context) {
 	tasks := []types.Tasks{}
-	userId := AuthUserId(c)
-	fmt.Println(userId)
-	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=$1 order by due_date asc", userId)
+	userId, err := AuthUserId(c)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	log.Println(userId)
+	result, err := db.Query("select id,name,due_date,priority,description from tasks where user_id=$1 and done=0 order by due_date asc", userId)
 	if err != nil {
 		panic("dbs errors:" + err.Error())
 	}
@@ -107,6 +113,29 @@ func CreateTask(c *gin.Context) {
 		"siteBase":   SiteBase,
 		"priorities": priorities,
 	})
+}
+
+func TaskDone(c *gin.Context) {
+	TaskId := c.PostForm("taskid")
+	//check if the user own this task
+	UserId, err := AuthUserId(c)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	var taskId int
+	err = db.QueryRow("select id from tasks where id = $1 and user_id=$2", TaskId, UserId).Scan(&taskId)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	//update to done
+	_, err = db.Exec("update tasks set done = 1 where id = $1 and user_id=$2", TaskId, UserId)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	c.Redirect(http.StatusMovedPermanently, SiteBase)
 }
 
 // get
@@ -173,7 +202,11 @@ func DoCreateTask(c *gin.Context) {
 	priority := c.PostForm("priority")
 	description := c.PostForm("description")
 	createdAt := time.Now().Format("2006-01-02 15:04:05")
-	userId := AuthUserId(c)
+	userId, err := AuthUserId(c)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 	var CreateTaskError, CreateTaskSucess string
 	if name != "" && dueDate != "" && description != "" {
 		//save task
@@ -211,7 +244,7 @@ func DoLogin(c *gin.Context) {
 	password := c.PostForm("password")
 	returnTo := c.PostForm("return_to")
 
-	err := db.QueryRow("SELECT email,password from users where email = $1", email).Scan(&login.Email, &login.Password)
+	err := db.QueryRow("SELECT id,email,password from users where email = $1", email).Scan(&login.Id, &login.Email, &login.Password)
 	if err != nil {
 		fmt.Println(err.Error())
 		loginErr := "Error email or password"
@@ -233,7 +266,7 @@ func DoLogin(c *gin.Context) {
 		return
 	}
 	session := sessions.Default(c)
-	session.Set("loginuseremail", login.Email)
+	session.Set("loginuserid", login.Id)
 	session.Save()
 	if len(returnTo) > 0 {
 		c.Redirect(http.StatusMovedPermanently, returnTo)
