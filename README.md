@@ -26,25 +26,16 @@ Before you can run this application, you'll need to have the following prerequis
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/yourusername/your-todolist-app.git
+   git clone https://github.com/abdoroot/todolist
    ```
 
 2. Change the directory to your project:
 
    ```shell
-   cd your-todolist-app
+   cd todolist
    ```
 
-3. Create a configuration file `config.json` with the following structure:
-
-   ```json
-   {
-     "DatabaseType": "postgres", // or "mysql"
-     "DatabaseURL": "your-database-connection-url",
-     "JWTSecret": "your-jwt-secret-key",
-     "Port": "8080" // Port to run the server on
-   }
-   ```
+3. Create a configuration file `config.go`:
 
 4. Install the required dependencies:
 
