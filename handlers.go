@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/abdoroot/todolist/types"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Custom middleware
@@ -208,7 +210,8 @@ func DoLogin(c *gin.Context) {
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 	returnTo := c.PostForm("return_to")
-	err := db.QueryRow("SELECT email,password from users where email = $1 and password = $2 ", email, password).Scan(&login.Email, &login.Password)
+
+	err := db.QueryRow("SELECT email,password from users where email = $1", email).Scan(&login.Email, &login.Password)
 	if err != nil {
 		fmt.Println(err.Error())
 		loginErr := "Error email or password"
@@ -216,6 +219,18 @@ func DoLogin(c *gin.Context) {
 
 			"error": loginErr,
 		})
+		return
+	}
+	hash := login.Password
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		fmt.Println(err.Error())
+		loginErr := "Error email or password"
+		c.HTML(200, "login.html", gin.H{
+
+			"error": loginErr,
+		})
+		return
 	}
 	session := sessions.Default(c)
 	session.Set("loginuseremail", login.Email)
@@ -236,10 +251,21 @@ func DOSignUp(c *gin.Context) {
 	name := c.PostForm("name")
 	email := c.PostForm("email")
 	password := c.PostForm("password")
-	createdAt := time.Now().Format("2006-01-02 15:04:05")
+	createdAt := time.Now().Format("2006-01-02 15:04")
 
 	if name != "" && strings.Contains(email, "@") && password != "" {
-		_, err := db.Exec("insert into users (name,email,password,created_at) values($1,$2,$3,$3)", name, email, password, createdAt)
+
+		passwordBytes, crptErr := bcrypt.GenerateFromPassword([]byte(password), 14)
+		if crptErr != nil {
+			log.Println(crptErr.Error())
+			c.HTML(http.StatusOK, "sign_up.html", gin.H{
+				"error": crptErr.Error(),
+			})
+			return
+		}
+		//hashed password
+		password = string(passwordBytes)
+		_, err := db.Exec("insert into users (name,email,password,created_at) values($1,$2,$3,$4)", name, email, password, createdAt)
 		if err != nil {
 			fmt.Println(err.Error())
 			c.HTML(http.StatusOK, "sign_up.html", gin.H{
@@ -253,7 +279,3 @@ func DOSignUp(c *gin.Context) {
 		})
 	}
 }
-
-
-
-

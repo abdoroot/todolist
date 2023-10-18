@@ -9,48 +9,50 @@
     <div class="card">
         <div class="card-header">Sign Up</div>
         <div class="card-body">
-            <form action="signup" method="post">
-                {{if .error}}
-                <div class="alert alert-danger" role="alert">
-                    {{.error}}
-                </div>
-                {{end}}
-                <div class="form-group row">
-                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Name</label>
-                    <div class="col-md-6">
-                        <input type="text" id="name" class="form-control" name="name" required autofocus>
+            <div class="col-md-6">
+                <form action="signup" method="post">
+                    {{if .error}}
+                    <div class="alert alert-danger" role="alert">
+                        {{.error}}
                     </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
-                    <div class="col-md-6">
-                        <input type="text" id="email_address" class="form-control" name="email" required autofocus>
+                    {{end}}
+                    <div class="form-group row">
+                        <label for="email_address" class="col-md-3 col-form-label">Name</label>
+                        <div class="col-md-6">
+                            <input type="text" id="name" class="form-control" name="name" required autofocus>
+                        </div>
                     </div>
-                </div>
 
-
-                <div class="form-group row">
-                    <label for="image" class="col-md-4 col-form-label text-md-right">Profile Image</label>
-                    <div class="col-md-6">
-                        <input type="file" id="image" name="image" autofocus>
+                    <div class="form-group row">
+                        <label for="email_address" class="col-md-3 col-form-label">E-Mail Address</label>
+                        <div class="col-md-6">
+                            <input type="text" id="email_address" class="form-control" name="email" required autofocus>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group row">
-                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
-                    <div class="col-md-6">
-                        <input type="password" id="password" class="form-control" name="password" required>
+
+                    <div class="form-group row">
+                        <label for="image" class="col-md-3 col-form-label">Profile Image</label>
+                        <div class="col-md-6">
+                            <input type="file" id="image" name="image" autofocus>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-md-6 offset-md-4">
-                    <button type="submit" class="btn btn-primary">
-                        Sign Up
-                    </button>
-                </div>
+                    <div class="form-group row">
+                        <label for="password" class="col-md-3 col-form-label">Password</label>
+                        <div class="col-md-6">
+                            <input type="password" id="password" class="form-control" name="password" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 offset-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Sign Up
+                        </button>
+                    </div>
+            </div>
+            </form>
         </div>
-        </form>
     </div>
 </body>
 
