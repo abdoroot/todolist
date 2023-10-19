@@ -1,14 +1,19 @@
-version: 'version'
 services:
-  todolist:
-    image: "golang"
+  golangApp:
+    build: ./
+    image: golangs
     ports:
-      - 8080:80
+      - "80:8080"
     depends_on:
-
-
+      - db
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080    
   db:
-    image: "postgres"
+    image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: "123456"
+      POSTGRES_PASSWORD: 123456
+      
