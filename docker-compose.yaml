@@ -1,0 +1,14 @@
+version: 'version'
+services:
+  todolist:
+    image: "golang"
+    ports:
+      - 8080:80
+    depends_on:
+
+
+  db:
+    image: "postgres"
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "123456"
